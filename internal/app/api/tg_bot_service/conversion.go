@@ -22,9 +22,17 @@ func internalMessageToExternal(msg *definitions.Message) *bot.SendMessageParams 
 	}
 
 	return &bot.SendMessageParams{
+		ReplyParameters: &models.ReplyParameters{
+			MessageID:                msg.ReplyMessageID,
+			ChatID:                   msg.ChatID,
+			AllowSendingWithoutReply: true,
+		},
 		ChatID:    msg.ChatID,
 		Text:      msg.Text,
 		ParseMode: models.ParseModeHTML,
+		LinkPreviewOptions: &models.LinkPreviewOptions{
+			IsDisabled: bot.True(),
+		},
 		ReplyMarkup: &models.InlineKeyboardMarkup{
 			InlineKeyboard: keyboard,
 		},

@@ -7,7 +7,10 @@ type Button struct {
 }
 
 type Message struct {
-	ChatID  any
-	Text    string
+	GifFileID      *int
+	ReplyMessageID int
+	ChatID         any
+	Text           string
+
 	Buttons [][]Button
 }

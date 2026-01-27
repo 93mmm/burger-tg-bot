@@ -3,6 +3,7 @@ package tg_bot_service
 import (
 	"context"
 
+	"github.com/93mmm/burger-tg-bot.git/internal/app/api/middlewares"
 	"github.com/93mmm/burger-tg-bot.git/internal/domain/definitions"
 	"github.com/93mmm/burger-tg-bot.git/internal/utils/logger"
 	"github.com/go-telegram/bot"
@@ -23,21 +24,7 @@ func NewServer(
 }
 
 func (s *Server) RegisterHandlers(b *bot.Bot) {
-	// handle commands
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, s.HandleAnyMessage)
-
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/", bot.MatchTypePrefix, s.HandleUnknownCommand)
-
-	// case callbacks.CallbackCredits:
-	// 	s.HandleCallbackCredits(ctx, update)
-	// case callbacks.CallbackContactManager:
-	// 	s.HandleCallbackContactManager(ctx, update)
-	// case callbacks.CallbackBack:
-	// 	s.HandleCallbackBack(ctx, update)
-
-	b.RegisterHandler(bot.HandlerTypeCallbackQueryData, "btn_", bot.MatchTypePrefix, s.ButtonCallbackHandler)
-
-	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, s.HandleAnyText)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, s.HandleAnyMessage, middlewares.PanicRecoveryMiddleware(), middlewares.InoutLogging())
 }
 
 func (s *Server) Start(ctx context.Context, b *bot.Bot) {
@@ -46,8 +33,10 @@ func (s *Server) Start(ctx context.Context, b *bot.Bot) {
 
 // Sends message
 func (s *Server) sendMessage(ctx context.Context, b *bot.Bot, msg *definitions.Message) {
-	logger.DebugKV(ctx, "method called", "m", msg)
-
+	if msg == nil {
+		logger.ErrorKV(ctx, "message is nil!")
+		return
+	}
 	tgMessage := internalMessageToExternal(msg)
 
 	logger.DebugKV(ctx, "method called", "m", tgMessage)

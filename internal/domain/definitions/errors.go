@@ -15,4 +15,6 @@ var (
 	ErrNotAuthorized = errors.New("не авторизован")
 	// внешняя ошибка, не можем получить детальную информацию
 	ErrExternalSystem = errors.New("внешняя ошибка")
+	// внешняя ошибка, не можем получить детальную информацию
+	ErrDecidedToNotSend = errors.New("не отправляем")
 )
