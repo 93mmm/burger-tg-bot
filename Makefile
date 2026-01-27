@@ -10,6 +10,20 @@ lint-all: .lint-changes .lint-full .buflint
 # Запуск docker
 up: .docker-up
 
+build-docker-image:
+	docker build --progress=plain -f dev/Dockerfile -t burger-go-tg-bot .
+
+run-docker-image:
+	docker run -d \
+	  --name bot-container \
+	  --restart unless-stopped \
+	  --env-file dev/.env \
+	  burger-go-tg-bot
+
+stop-docker-image:
+	docker stop bot-container
+	docker rm bot-container
+
 
 # Установка зависимостей
 .install-deps:
