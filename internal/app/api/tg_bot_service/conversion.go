@@ -38,3 +38,18 @@ func internalMessageToExternal(msg *definitions.TextMessage) *bot.SendMessagePar
 		},
 	}
 }
+
+func internalGifToExternal(msg *definitions.Gif) *bot.SendAnimationParams {
+	return &bot.SendAnimationParams{
+		ReplyParameters: &models.ReplyParameters{
+			MessageID:                msg.ReplyMessageID,
+			ChatID:                   msg.ChatID,
+			AllowSendingWithoutReply: true,
+			Quote:                    msg.Quote,
+		},
+		Animation: &models.InputFileString{
+			Data: msg.FileID,
+		},
+		ChatID: msg.ChatID,
+	}
+}

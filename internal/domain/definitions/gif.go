@@ -3,8 +3,9 @@ package definitions
 type Gif struct {
 	ReplyMessageID int
 	ChatID         any
+	Quote          string
 
-	FileID int
+	FileID string
 }
 
 func (t *Gif) SetChatID(chatID any) {

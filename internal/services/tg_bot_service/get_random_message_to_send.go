@@ -25,7 +25,7 @@ func (s *Service) GetRandomMessageToSend(ctx context.Context, text string, chatI
 		return nil, errors.Wrap(err, "произошла неизвестная ошибка")
 	}
 
-	message, err = s.getMessageIfContainsNoRandom(text)
+	message, err = s.messagesStorage.GetContainsMessage(text)
 	if err == nil {
 		message.SetChatID(chatID)
 		message.SetReplyMessageID(messageID)
@@ -35,20 +35,7 @@ func (s *Service) GetRandomMessageToSend(ctx context.Context, text string, chatI
 		return nil, errors.Wrap(err, "произошла неизвестная ошибка")
 	}
 
-	return nil, definitions.ErrInternal
-}
-
-// TODO: collapse
-func (s *Service) getMessageIfContainsNoRandom(text string) (definitions.Message, error) {
-	msg, err := s.messagesStorage.GetContainsMessage(text)
-	if err != nil {
-		if errors.Is(err, definitions.ErrNotFound) {
-			return nil, errors.Wrap(err, "не нашли что отправлять")
-		}
-		return nil, errors.Wrap(err, "неожиданная ошибка")
-	}
-
-	return msg, nil
+	return nil, errors.Wrap(definitions.ErrNotFound, "не придумали что отвечать")
 }
 
 func (s *Service) textToNormalForm(text string) string {

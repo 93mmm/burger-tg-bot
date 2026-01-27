@@ -37,8 +37,13 @@ var (
 		"дэйли": &definitions.TextMessage{
 			Text: "https://telemost.yandex.ru/j/24504696564321",
 		},
-		// "ДИТ": &definitions.Gif{
-		// 	FileID: ,
-		// }
+		"дит": &definitions.Gif{
+			FileID: "CgACAgIAAyEFAATnxGR_AAM5aXjkjlnvPpTK-KJTv2f9bAl5pboAAlldAALkWKBKPDih-d5XBL04BA",
+			Quote:  "дит",
+		},
+		"ДИТ": &definitions.Gif{
+			FileID: "CgACAgIAAyEFAATnxGR_AAM5aXjkjlnvPpTK-KJTv2f9bAl5pboAAlldAALkWKBKPDih-d5XBL04BA",
+			Quote:  "ДИТ",
+		},
 	}
 )

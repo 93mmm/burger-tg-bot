@@ -6,6 +6,7 @@ import (
 	"github.com/93mmm/burger-tg-bot.git/cmd/config"
 	tg_bot_server "github.com/93mmm/burger-tg-bot.git/internal/app/api/tg_bot_service"
 	"github.com/93mmm/burger-tg-bot.git/internal/services/tg_bot_service"
+	"github.com/93mmm/burger-tg-bot.git/internal/storage/messages"
 	"github.com/93mmm/burger-tg-bot.git/internal/utils/logger"
 	"github.com/go-telegram/bot"
 	"github.com/pkg/errors"
@@ -62,7 +63,9 @@ func (a *app) Run(c context.Context) error {
 		return errors.Wrap(err, "error while creating bot instance")
 	}
 
-	service := tg_bot_service.NewService()
+	storage := messages.NewStorage()
+
+	service := tg_bot_service.NewService(storage)
 
 	server := tg_bot_server.NewServer(service)
 

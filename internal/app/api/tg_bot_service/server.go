@@ -8,6 +8,7 @@ import (
 	"github.com/93mmm/burger-tg-bot.git/internal/utils/debug"
 	"github.com/93mmm/burger-tg-bot.git/internal/utils/logger"
 	"github.com/go-telegram/bot"
+	"github.com/pkg/errors"
 )
 
 // Transport layer in telegram bot
@@ -39,20 +40,28 @@ func (s *Server) sendMessage(ctx context.Context, b *bot.Bot, msg definitions.Me
 		return
 	}
 	logger.DebugKV(ctx, "trying to send message", "message", msg)
+	var err error
 
 	switch m := msg.(type) {
 	case *definitions.TextMessage:
 		tgMessage := internalMessageToExternal(m)
-		_, err := b.SendMessage(
+		_, err = b.SendMessage(
 			ctx,
 			tgMessage,
 		)
-		if err != nil {
-			logger.ErrorKV(ctx, "error happened while sending message", err)
-		}
+
 	case *definitions.Gif:
+		tgMessage := internalGifToExternal(m)
+		_, err = b.SendAnimation(
+			ctx,
+			tgMessage,
+		)
 
 	default:
-		logger.DebugKV(ctx, "received undefined type of message", "type", debug.TypeOf(msg))
+		err = errors.Wrapf(definitions.ErrInternal, "received undefined type of message: %v", debug.TypeOf(msg))
+	}
+
+	if err != nil {
+		logger.ErrorKV(ctx, "error happened while sending message", err)
 	}
 }

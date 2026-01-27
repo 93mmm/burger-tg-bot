@@ -11,7 +11,9 @@ type Service struct {
 	messagesStorage clients.MessagesStorage
 }
 
-func NewService() *Service {
+func NewService(
+	messagesStorage clients.MessagesStorage,
+) *Service {
 	replacer := strings.NewReplacer(
 		",", "",
 		".", "",
@@ -24,6 +26,7 @@ func NewService() *Service {
 	)
 
 	return &Service{
-		replacer: replacer,
+		replacer:        replacer,
+		messagesStorage: messagesStorage,
 	}
 }

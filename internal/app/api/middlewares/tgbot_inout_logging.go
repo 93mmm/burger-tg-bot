@@ -23,7 +23,7 @@ func InoutLogging() func(bot.HandlerFunc) bot.HandlerFunc {
 
 			ctx = logger.WithKV(ctx, "user_id", tgbot.GetUserID(update))
 
-			logger.DebugKV(ctx, "message_in", update)
+			logger.DebugKV(ctx, "message_in", "update", update)
 
 			next(ctx, b, update)
 		}
