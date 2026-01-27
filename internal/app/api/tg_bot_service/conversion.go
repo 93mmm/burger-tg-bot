@@ -6,7 +6,7 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-func internalMessageToExternal(msg *definitions.Message) *bot.SendMessageParams {
+func internalMessageToExternal(msg *definitions.TextMessage) *bot.SendMessageParams {
 	keyboard := [][]models.InlineKeyboardButton{}
 	for _, buttonRow := range msg.Buttons {
 		row := []models.InlineKeyboardButton{}

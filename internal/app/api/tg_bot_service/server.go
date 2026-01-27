@@ -5,6 +5,7 @@ import (
 
 	"github.com/93mmm/burger-tg-bot.git/internal/app/api/middlewares"
 	"github.com/93mmm/burger-tg-bot.git/internal/domain/definitions"
+	"github.com/93mmm/burger-tg-bot.git/internal/utils/debug"
 	"github.com/93mmm/burger-tg-bot.git/internal/utils/logger"
 	"github.com/go-telegram/bot"
 )
@@ -32,20 +33,26 @@ func (s *Server) Start(ctx context.Context, b *bot.Bot) {
 }
 
 // Sends message
-func (s *Server) sendMessage(ctx context.Context, b *bot.Bot, msg *definitions.Message) {
+func (s *Server) sendMessage(ctx context.Context, b *bot.Bot, msg definitions.Message) {
 	if msg == nil {
 		logger.ErrorKV(ctx, "message is nil!")
 		return
 	}
-	tgMessage := internalMessageToExternal(msg)
+	logger.DebugKV(ctx, "trying to send message", "message", msg)
 
-	logger.DebugKV(ctx, "method called", "m", tgMessage)
+	switch m := msg.(type) {
+	case *definitions.TextMessage:
+		tgMessage := internalMessageToExternal(m)
+		_, err := b.SendMessage(
+			ctx,
+			tgMessage,
+		)
+		if err != nil {
+			logger.ErrorKV(ctx, "error happened while sending message", err)
+		}
+	case *definitions.Gif:
 
-	_, err := b.SendMessage(
-		ctx,
-		tgMessage,
-	)
-	if err != nil {
-		logger.ErrorKV(ctx, "error happened while sending message", err)
+	default:
+		logger.DebugKV(ctx, "received undefined type of message", "type", debug.TypeOf(msg))
 	}
 }

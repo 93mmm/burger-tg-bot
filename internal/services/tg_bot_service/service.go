@@ -1,9 +1,14 @@
 package tg_bot_service
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/93mmm/burger-tg-bot.git/internal/services/tg_bot_service/clients"
+)
 
 type Service struct {
-	replacer *strings.Replacer
+	replacer        *strings.Replacer
+	messagesStorage clients.MessagesStorage
 }
 
 func NewService() *Service {

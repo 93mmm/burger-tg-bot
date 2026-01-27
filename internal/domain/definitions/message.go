@@ -1,16 +1,7 @@
 package definitions
 
-type Button struct {
-	Text string
-	Data string
-	URL  string
-}
-
-type Message struct {
-	GifFileID      *int
-	ReplyMessageID int
-	ChatID         any
-	Text           string
-
-	Buttons [][]Button
+type Message interface {
+	SetChatID(chatID any)
+	SetReplyMessageID(messageID int)
+	Clone() Message
 }

@@ -6,108 +6,52 @@ import (
 	"strings"
 
 	"github.com/93mmm/burger-tg-bot.git/internal/domain/definitions"
-	"github.com/93mmm/burger-tg-bot.git/internal/utils/logger"
 	"github.com/pkg/errors"
 )
 
-var (
-	equalsMessages = map[string]definitions.Message{
-		"господизаберименяотсюда": {
-			Text: "Хлопчик, остуди свою жепу, твои мольбы были услышаны", // или "Услышал тебя, родной"
-		},
-		"видишь": {
-			Text: "А как на счет FUCK PARENTS?",
-		},
-		"чизбургерсбеконом": {
-			Text: "посмотрите на этот чизбургер с беконом из паба оу господи там что ещё и картошка фри оох о господи иисусе забери меня прямо сейчас господи забери меня прямо сейчас охх ёмаё ох мы поставим это на первое место потому что эта девчонка выглядит просто сногшибательно оу ооу оуу а-се-а-го ранс оуу чёрт мм мгм мы поставим это на третье место господи как же аппетитно выглядит этот бекон о мой грёбаный иисус ох господи ахрененная запечённая картошка господи дайте мне всё три блин ну-ка посмотрим мы поставим это на четвёртое место ухх 🤤\n\n\nпосмотрите на этот чизбургер с беконом из паба \nоу господи там что ещё и картошка фри \nоох о господи иисусе забери меня прямо сейчас господи забери меня прямо сейчас \nохх ёмаё ох мы поставим это на первое место потому что эта девчонка выглядит просто сногшибательно \nоу ооу оуу а-се-а-го ранс оуу чёрт мм мгм \nмы поставим это на третье место \nгосподи как же аппетитно выглядит этот бекон \nо мой грёбаный иисус \nох господи ахрененная запечённая картошка \nгосподи дайте мне всё три\nблин ну-ка посмотрим мы поставим это на четвёртое место \nухх 🤤",
-		},
-		"бэргер": {
-			Text: "посмотрите на этот чизбургер с беконом из паба оу господи там что ещё и картошка фри оох о господи иисусе забери меня прямо сейчас господи забери меня прямо сейчас охх ёмаё ох мы поставим это на первое место потому что эта девчонка выглядит просто сногшибательно оу ооу оуу а-се-а-го ранс оуу чёрт мм мгм мы поставим это на третье место господи как же аппетитно выглядит этот бекон о мой грёбаный иисус ох господи ахрененная запечённая картошка господи дайте мне всё три блин ну-ка посмотрим мы поставим это на четвёртое место ухх 🤤\n\n\nпосмотрите на этот чизбургер с беконом из паба \nоу господи там что ещё и картошка фри \nоох о господи иисусе забери меня прямо сейчас господи забери меня прямо сейчас \nохх ёмаё ох мы поставим это на первое место потому что эта девчонка выглядит просто сногшибательно \nоу ооу оуу а-се-а-го ранс оуу чёрт мм мгм \nмы поставим это на третье место \nгосподи как же аппетитно выглядит этот бекон \nо мой грёбаный иисус \nох господи ахрененная запечённая картошка \nгосподи дайте мне всё три\nблин ну-ка посмотрим мы поставим это на четвёртое место \nухх 🤤",
-		},
-		"чурка": {
-			Text: "Чурок в печку",
-		},
-		"негры": {
-			Text: "Негров сжечь",
-		},
-		"обед": {
-			Text: "Приятного аппетита",
-		},
-		"накидайте": {
-			Text: "Накидайте за обе щеки бедолаге, благословлю",
-		},
-	}
-
-	containsMessages = map[string]definitions.Message{
-		"бургер": {
-			Text: "господи забери меня прямо сейчас",
-		},
-		"https://git.mos.ru/buch-cloud/moscow-team-2.0": {
-			Text: "накидайте ему аппрувов",
-		},
-		"дейли": {
-			Text: "https://telemost.yandex.ru/j/24504696564321",
-		},
-		"дэйли": {
-			Text: "https://telemost.yandex.ru/j/24504696564321",
-		},
-	}
-)
-
-func (s *Service) GetRandomMessageToSend(ctx context.Context, text string, chatID any, messageID int) (*definitions.Message, error) {
-	msg, err := s.getMessageIfEquals(ctx, text, chatID)
+func (s *Service) GetRandomMessageToSend(ctx context.Context, text string, chatID any, messageID int) (definitions.Message, error) {
+	message, err := s.messagesStorage.GetEqualsMessage(
+		s.textToNormalForm(text),
+	)
 	if err == nil {
-		return msg, nil
-	}
-	if !errors.Is(err, definitions.ErrDecidedToNotSend) && !errors.Is(err, definitions.ErrNotFound) {
-		return nil, errors.Wrap(err, "произошла неизвестная ошибка")
-	}
-
-	msg, err = s.getMessageIfContainsNoRandom(ctx, text, chatID, messageID)
-	if err == nil {
-		return msg, nil
-	}
-	if !errors.Is(err, definitions.ErrDecidedToNotSend) && !errors.Is(err, definitions.ErrNotFound) {
-		return nil, errors.Wrap(err, "произошла неизвестная ошибка")
-	}
-
-	return nil, definitions.ErrDecidedToNotSend
-}
-
-func (s *Service) getMessageIfEquals(ctx context.Context, text string, chatID any) (*definitions.Message, error) {
-	key := s.textToNormalForm(text)
-	message, ok := equalsMessages[key]
-	if !ok {
-		logger.DebugKV(ctx, "не отправили потому что нет такого ключа", "key", key)
-		return nil, definitions.ErrNotFound
-	}
-
-	if toSendOrNotToSend() {
-		message.ChatID = chatID
-		return &message, nil
-	}
-	logger.DebugKV(ctx, "не отправили потому что toSendOrNotToSend решил не отправлять", "key", key)
-
-	return nil, definitions.ErrDecidedToNotSend
-}
-
-func (s *Service) getMessageIfContainsNoRandom(ctx context.Context, text string, chatID any, messageID int) (*definitions.Message, error) {
-	for substr, msg := range containsMessages {
-		if strings.Contains(text, substr) {
-			msg.ChatID = chatID
-			msg.ReplyMessageID = messageID
-			return &msg, nil
+		// рандомно выбираем будем ли отправлять сообщение
+		if rand.IntN(10) > 5 {
+			message.SetChatID(chatID)
+			return message, nil
 		}
+		return nil, definitions.ErrDecidedToNotSend
 	}
-	logger.DebugKV(ctx, "не отправили потому что нет совпадения", "text", text)
-	return nil, errors.Wrap(definitions.ErrNotFound, "не нашли что отправлять")
+	if !errors.Is(err, definitions.ErrDecidedToNotSend) && !errors.Is(err, definitions.ErrNotFound) {
+		return nil, errors.Wrap(err, "произошла неизвестная ошибка")
+	}
+
+	message, err = s.getMessageIfContainsNoRandom(text)
+	if err == nil {
+		message.SetChatID(chatID)
+		message.SetReplyMessageID(messageID)
+		return message, nil
+	}
+	if !errors.Is(err, definitions.ErrDecidedToNotSend) && !errors.Is(err, definitions.ErrNotFound) {
+		return nil, errors.Wrap(err, "произошла неизвестная ошибка")
+	}
+
+	return nil, definitions.ErrInternal
+}
+
+// TODO: collapse
+func (s *Service) getMessageIfContainsNoRandom(text string) (definitions.Message, error) {
+	msg, err := s.messagesStorage.GetContainsMessage(text)
+	if err != nil {
+		if errors.Is(err, definitions.ErrNotFound) {
+			return nil, errors.Wrap(err, "не нашли что отправлять")
+		}
+		return nil, errors.Wrap(err, "неожиданная ошибка")
+	}
+
+	return msg, nil
 }
 
 func (s *Service) textToNormalForm(text string) string {
 	text = s.replacer.Replace(text)
 	return strings.ToLower(text)
-}
-
-func toSendOrNotToSend() bool {
-	return rand.IntN(10) > 5
 }

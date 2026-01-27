@@ -7,5 +7,5 @@ import (
 )
 
 type Service interface {
-	GetRandomMessageToSend(ctx context.Context, text string, chatID any, messageID int) (*definitions.Message, error)
+	GetRandomMessageToSend(ctx context.Context, text string, chatID any, messageID int) (definitions.Message, error)
 }
