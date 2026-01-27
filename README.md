@@ -1,4 +1,3 @@
 # tg-bot-service
 
-TODO:
-- add middlewares (panic handling, rate limiting)
+create .env file based on .env_example to run this bot
