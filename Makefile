@@ -13,6 +13,9 @@ up: .docker-up
 build-docker-image:
 	docker build --progress=plain -f dev/Dockerfile -t burger-go-tg-bot .
 
+rebuild-docker-image:
+	docker build --no-cache --progress=plain -f dev/Dockerfile -t burger-go-tg-bot .
+
 run-docker-image:
 	docker run -d \
 	  --name bot-container \
