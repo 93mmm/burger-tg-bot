@@ -1,30 +1,32 @@
 package config
 
 import (
-	"fmt"
-	"log"
-
-	"github.com/jessevdk/go-flags"
+	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/pkg/errors"
 )
 
-// Конфигурация приложения
 type Config struct {
-	Environment string `long:"environment" env:"ENVIRONMENT" description:"App environment (develop, test, prod)" default:"develop"`
+	Environment string `env:"ENVIRONMENT" env-default:"develop"`
+	LogLevel    string `env:"LOG_LEVEL" env-default:"warn"`
+	MaxCpu      int    `env:"MAX_CPU" env-default:"0"`
+	BotToken    string `env:"BOT_TOKEN" env-required:"true"`
 
-	LogLevel string `long:"log-level" description:"Log level: panic, fatal, warn, info, debug" env:"LOG_LEVEL" default:"warn"`
+	Messages messages
+}
 
-	MaxCpu int `long:"max-cpu" env:"MAX_CPU" description:"Max cpu usage (GOMAXPROC)" default:"0"`
-
-	BotToken string `long:"bot-token" env:"BOT_TOKEN" description:"Telegram bot token" default:""`
+type messages struct {
+	DailyLink    string `env:"DAILY_LINK" env-required:"true"`
+	GitMrURL     string `env:"GIT_MR_URL" env-required:"true"`
+	DitGifID     string `env:"DIT_GIF_FILE_ID" env-required:"true"`
+	GroupMembers string `env:"GROUP_MEMBERS" env-required:"true"`
 }
 
 func NewConfig() (*Config, error) {
 	var cfg Config
-	parser := flags.NewParser(&cfg, flags.Default|flags.IgnoreUnknown)
-	_, err := parser.Parse()
+
+	err := cleanenv.ReadEnv(&cfg)
 	if err != nil {
-		parser.WriteHelp(log.Writer())
-		return nil, fmt.Errorf("config parse failed: %w", err)
+		return nil, errors.Wrap(err, "config error")
 	}
 
 	return &cfg, nil

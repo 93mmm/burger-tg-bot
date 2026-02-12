@@ -2,7 +2,6 @@ package tg_bot_service
 
 import (
 	"context"
-	"math/rand/v2"
 	"strings"
 
 	"github.com/93mmm/burger-tg-bot.git/internal/domain/definitions"
@@ -14,12 +13,8 @@ func (s *Service) GetRandomMessageToSend(ctx context.Context, text string, chatI
 		s.textToNormalForm(text),
 	)
 	if err == nil {
-		// рандомно выбираем будем ли отправлять сообщение
-		if rand.IntN(10) > 5 {
-			message.SetChatID(chatID)
-			return message, nil
-		}
-		return nil, definitions.ErrDecidedToNotSend
+		message.SetChatID(chatID)
+		return message, nil
 	}
 	if !errors.Is(err, definitions.ErrDecidedToNotSend) && !errors.Is(err, definitions.ErrNotFound) {
 		return nil, errors.Wrap(err, "произошла неизвестная ошибка")

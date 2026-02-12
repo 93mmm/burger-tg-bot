@@ -26,6 +26,7 @@ func NewServer(
 }
 
 func (s *Server) RegisterHandlers(b *bot.Bot) {
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/change_tags", bot.MatchTypePrefix, s.HandleChangeTags, middlewares.PanicRecoveryMiddleware(), middlewares.InoutLogging())
 	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, s.HandleAnyMessage, middlewares.PanicRecoveryMiddleware(), middlewares.InoutLogging())
 }
 
