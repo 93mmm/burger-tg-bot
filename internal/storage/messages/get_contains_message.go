@@ -3,10 +3,13 @@ package messages
 import (
 	"math/rand/v2"
 	"strings"
+	"time"
 
 	"github.com/93mmm/burger-tg-bot.git/internal/domain/definitions"
 	"github.com/pkg/errors"
 )
+
+var moscowTZ = time.FixedZone("MSK", 3*60*60)
 
 func (s *Storage) GetContainsMessage(key string) (definitions.Message, error) {
 	var msg definitions.Message
@@ -21,8 +24,12 @@ func (s *Storage) GetContainsMessage(key string) (definitions.Message, error) {
 			Text: "господи закажи меня прямо сейчас",
 		}
 	case strings.Contains(key, s.gitMrURL):
+		text := "накидайте аппрувов люто"
+		if isWorkingHours() {
+			text += "\n" + s.pickRandomMembers(2)
+		}
 		msg = &definitions.TextMessage{
-			Text: "накидайте аппрувов люто\n" + s.pickRandomMembers(2),
+			Text: text,
 		}
 	case strings.Contains(key, "дейли"):
 		msg = &definitions.TextMessage{
@@ -60,4 +67,11 @@ func (s *Storage) pickRandomMembers(n int) string {
 	}
 
 	return strings.Join(picked, " ")
+}
+
+func isWorkingHours() bool {
+	now := time.Now().In(moscowTZ)
+	weekday := now.Weekday()
+	hour := now.Hour()
+	return weekday >= time.Monday && weekday <= time.Friday && hour >= 9 && hour < 18
 }
