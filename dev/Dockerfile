@@ -17,5 +17,9 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 COPY --from=builder /app/main .
+COPY assets/ ./assets/
+# Persistent data dir for maintainers.json — expected to be a mounted volume
+# (-v ./data:/root/data). Pre-creating it lets the bot start even without a mount.
+RUN mkdir -p /root/data
 
 CMD ["./main"]

@@ -11,12 +11,7 @@ import (
 )
 
 func (s *Server) HandleChangeTags(ctx context.Context, b *bot.Bot, update *models.Update) {
-	if update.Message == nil {
-		return
-	}
-
-	// работает только в личных сообщениях
-	if update.Message.Chat.Type != "private" {
+	if !s.isAdminInPrivate(update) {
 		return
 	}
 

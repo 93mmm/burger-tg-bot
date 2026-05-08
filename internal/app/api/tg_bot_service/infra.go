@@ -9,4 +9,7 @@ import (
 type Service interface {
 	GetRandomMessageToSend(ctx context.Context, text string, chatID any, messageID int) (definitions.Message, error)
 	ChangeTags(raw string) string
+	SetMaintainers(raw string) string
+	DelMaintainers(raw string) string
+	ListMaintainers() string
 }

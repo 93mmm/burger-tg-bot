@@ -5,7 +5,7 @@ type Gif struct {
 	ChatID         any
 	Quote          string
 
-	FileID string
+	FilePath string
 }
 
 func (t *Gif) SetChatID(chatID any) {

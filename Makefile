@@ -17,10 +17,12 @@ rebuild-docker-image:
 	docker build --no-cache --progress=plain -f dev/Dockerfile -t burger-go-tg-bot .
 
 run-docker-image:
+	mkdir -p data
 	docker run -d \
 	  --name bot-container \
 	  --restart unless-stopped \
 	  --env-file dev/.env \
+	  -v $(CURDIR)/data:/root/data \
 	  burger-go-tg-bot
 
 stop-docker-image:

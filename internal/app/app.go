@@ -63,16 +63,18 @@ func (a *app) Run(c context.Context) error {
 		return errors.Wrap(err, "error while creating bot instance")
 	}
 
-	storage := messages.NewStorage(
+	storage, err := messages.NewStorage(
 		a.config.Messages.DailyLink,
 		a.config.Messages.GitMrURL,
-		a.config.Messages.DitGifID,
 		a.config.Messages.GroupMembers,
 	)
+	if err != nil {
+		return errors.Wrap(err, "init messages storage")
+	}
 
 	service := tg_bot_service.NewService(storage)
 
-	server := tg_bot_server.NewServer(service)
+	server := tg_bot_server.NewServer(service, a.config.AdminUserID)
 
 	server.RegisterHandlers(b)
 
