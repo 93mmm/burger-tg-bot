@@ -11,10 +11,10 @@ lint-all: .lint-changes .lint-full .buflint
 up: .docker-up
 
 build-docker-image:
-	docker build --progress=plain -f dev/Dockerfile -t burger-go-tg-bot .
+	docker build -f dev/Dockerfile -t burger-go-tg-bot .
 
 rebuild-docker-image:
-	docker build --no-cache --progress=plain -f dev/Dockerfile -t burger-go-tg-bot .
+	docker build --no-cache -f dev/Dockerfile -t burger-go-tg-bot .
 
 run-docker-image:
 	mkdir -p data
